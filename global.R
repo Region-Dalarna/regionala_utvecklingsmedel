@@ -11,5 +11,14 @@ library(tidyr)
 library(readr)
 library(ggplot2)
 
+source("https://raw.githubusercontent.com/Region-Dalarna/funktioner/main/func_shinyappar.R", encoding = "utf-8", echo = FALSE)
+
+source("https://raw.githubusercontent.com/Region-Dalarna/funktioner/main/func_API.R", encoding = "utf-8")
+
 # Allmänna options - TRUE = visa inte R-felmeddelanden i appen, FALSE = visa felmeddelanden från R på webben
 options(shiny.sanitize.errors = FALSE)
+
+# Läs in data
+data_trans <- readRDS("G:/skript/projekt/rum/data_trans_clean.rds")
+data_adresser<- readRDS("G:/skript/projekt/rum/data_adresser_clean.rds")
+data_finans<- readRDS("G:/skript/projekt/rum/data_finans_clean.rds")
