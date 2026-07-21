@@ -1,6 +1,6 @@
-# regionala_utvecklingsmedel_2
+# regionala_utvecklingsmedel
 
-Detta repository innehåller en Shinyapplikation (`regionala_utvecklingsmedel_2`) för Samhällsanalys, Region Dalarna.
+Detta repository innehåller en Shinyapplikation (`regionala_utvecklingsmedel`) för Samhällsanalys, Region Dalarna.
 
 ## Struktur
 
@@ -18,5 +18,5 @@ Appfilerna ligger **direkt i repo-roten** (så att Shiny Server kör appen utan 
   - `.github/workflows/deploy.yml` – publicerar vid push till `publicera-publik` eller `publicera-intern`
   - `.github/workflows/avpublicera.yml` – tar bort appen från vald server (manuell trigger)
 
-  Appmapp på servern: `/srv/shiny-server/regionala_utvecklingsmedel_2`.
+  Appmapp på servern: `/srv/shiny-server/regionala_utvecklingsmedel`.
 

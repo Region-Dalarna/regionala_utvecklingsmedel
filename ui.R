@@ -19,24 +19,48 @@ shinyUI(
     ),
     tabsetPanel(
       tabPanel('Beviljade 1:1-medel',
+               checkboxGroupInput(
+                 inputId  = "valda_stodtyper",
+                 label    = "Välj stödtyp:",
+                 choices = c("Projektmedel"       = "PROJ",
+                             "Företagsstöd"       = "FTG",
+                             "Kommersiell service" = "KS"),
+                 selected = c("Projektmedel", "Företagsstöd", "Kommersiell service")  # alla förkryssade från start
+               ),
                h3('Beviljat belopp per år'),
                plotOutput('stapeldiagram')
       ),
-      tabsetPanel(
-        tabPanel('Projektmedel',
-                 h3('Beviljat belopp per år'),
-                 plotOutput('stapeldiagram')
-        ),
-      tabsetPanel(
-        tabPanel('Företagsstöd',
-                 h3('Beviljat belopp per år'),
-                 plotOutput('stapeldiagram')
-        ),
-        tabsetPanel(
-          tabPanel('Kommersiell service',
-                   h3('Beviljat belopp per år'),
-                   plotOutput('stapeldiagram')
-          ),
+      tabPanel('Projektmedel',
+               h3('Beviljat belopp per år'),
+               plotOutput('stapeldiagram')
+      ),
+
+      tabPanel('Företagsstöd',
+               fluidRow(
+                 column(3,
+                        selectInput(
+                          inputId  = "ftg_ar",
+                          label    = "Välj år:",
+                          choices  = c("Alla år", sort(unique(data_trans$beslut_ar))),
+                          selected = "Alla år"
+                        ),
+                        radioButtons(
+                          inputId  = "ftg_matt",
+                          label    = "Visa som:",
+                          choices  = c("Belopp" = "belopp", "Antal ärenden" = "antal"),
+                          selected = "belopp"
+                        )
+                 ),
+                 column(9,
+                        h3("Fördelning kön på VD"),
+                        plotOutput("ftg_kon_diagram")
+                 )
+               )
+      ),
+      tabPanel('Kommersiell service',
+               h3('Beviljat belopp per år'),
+               plotOutput('stapeldiagram')
+      ),
       tabPanel('Om', p('Beskriv applikationen här.'))
     ),
     tags$div(
@@ -49,9 +73,6 @@ shinyUI(
     )
   )
 )
-
-
-
   #source('global.R')
 # shinyUI(
 #   fluidPage(
