@@ -36,7 +36,7 @@ shinyServer(function(input, output, session) {
              beslut_ar %in% input$proj_ar)
   })
 
-  # Diagram beviljade och utbetalada medel
+  # Diagram beviljade medel och antal ärenden
   output$proj_ar_diagram <- renderPlot({
 
     if (input$proj_matt == "belopp") {
@@ -54,7 +54,7 @@ shinyServer(function(input, output, session) {
     }
 
     plot_data %>%
-      ggplot(aes(x = beslut_ar, y = varde, fill = beslut_ar)) +
+      ggplot(aes(x = factor(beslut_ar), y = varde, fill = factor(beslut_ar))) +
       geom_col(fill = "steelblue") +
       labs(
         title = "Projektmedel per kalenderår",
@@ -64,6 +64,101 @@ shinyServer(function(input, output, session) {
       theme_minimal() +
       theme(legend.position = "none")
     })
+
+# Utbetalningar i relation till beslutsår.
+
+  output$proj_kohort_diagram <- renderPlot({
+    req(input$proj_ar)
+
+    data_trans %>%
+      filter(stodtyp == "PROJ",
+             beslut_ar %in% input$proj_ar,
+             trans_ar <= year(Sys.Date())) %>%
+      group_by(beslut_ar, trans_ar) %>%
+      summarise(utbet = sum(utbet_belopp, na.rm = TRUE), .groups = "drop") %>%
+      ggplot(aes(x = factor(trans_ar), y = utbet, fill = factor(beslut_ar))) +
+      geom_col() +
+      labs(
+        title = "Utbetalningar per år fördelat efter beslutsår",
+        x = "Utbetalningsår",
+        y = "Utbetalt belopp (kr)",
+        fill = "Beslutsår"
+      ) +
+      theme_minimal()
+  })
+
+# Fördelning utifrån nationella strategins kategorier och resultatkedjor
+
+  output$proj_nat_strat_diagram <- renderPlot({
+    req(input$proj_ar)
+
+    if (input$proj_matt == "belopp") {
+      plot_data <- proj_data() %>%
+        group_by(nat_strat_ren, beslut_ar) %>%
+        summarise(varde = sum(beviljat_belopp, na.rm = TRUE), .groups = "drop")
+      y_label <- "Summa beviljat belopp (kr)"
+
+    } else if (input$proj_matt == "antal") {
+      plot_data <- proj_data() %>%
+        group_by(nat_strat_ren, beslut_ar) %>%
+        summarise(varde = n_distinct(arende), .groups = "drop")
+      y_label <- "Antal ärenden"
+    } else {
+      plot_data <- proj_data() %>%
+        group_by(nat_strat_ren, beslut_ar) %>%
+        summarise(varde = sum(utbet_belopp, na.rm = TRUE), .groups = "drop")
+      y_label <- "Utbetalt belopp (kr)"
+    }
+
+    plot_data %>%
+      filter(!is.na(nat_strat_ren)) %>%
+      ggplot(aes(x = nat_strat_ren, y = varde, fill = factor(beslut_ar))) +
+      geom_col(position = "dodge") +
+      labs(
+        title = "Fördelning per nationellt strategiområde",
+        x = "Strategiområde",
+        y = y_label,
+        fill = "Beslutår"
+      ) +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  })
+
+  output$proj_resultatkedja_diagram <- renderPlot({
+    req(input$proj_ar)
+
+    if (input$proj_matt == "belopp") {
+      plot_data <- proj_data() %>%
+        group_by(resultatkedja, beslut_ar) %>%
+        summarise(varde = sum(beviljat_belopp, na.rm = TRUE), .groups = "drop")
+      y_label <- "Summa beviljat belopp (kr)"
+    } else if (input$proj_matt == "antal") {
+      plot_data <- proj_data() %>%
+        group_by(resultatkedja, beslut_ar) %>%
+        summarise(varde = n_distinct(arende), .groups = "drop")
+      y_label <- "Antal ärenden"
+    } else {
+      plot_data <- proj_data() %>%
+        group_by(resultatkedja, beslut_ar) %>%
+        summarise(varde = sum(utbet_belopp, na.rm = TRUE), .groups = "drop")
+      y_label <- "Utbetalt belopp (kr)"
+    }
+
+    plot_data %>%
+      filter(!is.na(resultatkedja)) %>%
+    mutate(resultatkedja = str_trunc(resultatkedja, width = 20, ellipsis = "...")) %>%
+      ggplot(aes(x = resultat, y = varde, fill = factor(beslut_ar))) +
+      geom_col(position = "dodge") +
+      labs(
+        title = "Fördelning per resultatkedja",
+        x = "Resultatkedja",
+        y = y_label,
+        fill = "Beslutår"
+      ) +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  })
+
 
 # FLIKEN FÖRETAGSSTÖD
 
@@ -212,7 +307,27 @@ output$ftg_lokal_1_diagram <- renderPlot({
     theme(legend.position = "none")
 })
 
+# Utbetalningar i relation till beslutsår.
 
+output$ftg_kohort_diagram <- renderPlot({
+  req(input$ftg_ar)
+
+  data_trans %>%
+    filter(stodtyp == "FTG",
+           beslut_ar %in% input$ftg_ar,
+           trans_ar <= year(Sys.Date())) %>%
+    group_by(beslut_ar, trans_ar) %>%
+    summarise(utbet = sum(utbet_belopp, na.rm = TRUE), .groups = "drop") %>%
+    ggplot(aes(x = factor(trans_ar), y = utbet, fill = factor(beslut_ar))) +
+    geom_col() +
+    labs(
+      title = "Utbetalningar per år fördelat efter beslutsår",
+      x = "Utbetalningsår",
+      y = "Utbetalt belopp (kr)",
+      fill = "Beslutsår"
+    ) +
+    theme_minimal()
+})
 
 # Filtrera för kommersiell service
 ks_data <- reactive({
