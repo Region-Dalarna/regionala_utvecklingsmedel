@@ -1,0 +1,12 @@
+name: regionala_utvecklingsmedel
+title: regionala_utvecklingsmedel
+username: regionalautvecklingsmedel
+account: regionalautvecklingsmedel
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 17647442
+bundleId: 12331110
+url: https://regionalautvecklingsmedel.shinyapps.io/regionala_utvecklingsmedel/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

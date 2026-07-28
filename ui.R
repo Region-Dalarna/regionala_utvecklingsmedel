@@ -44,6 +44,7 @@ shinyUI(
               )
           )
         ),
+
       tabPanel('Projektmedel',
                # Rad 1 - filter + två diagram
                fluidRow(
@@ -76,12 +77,12 @@ shinyUI(
              h3("Fördelning per nationellt strategiområde"),
              plotOutput("proj_nat_strat_diagram")
            ),
+
            column(6,
                   h3("Fördelning per resultatkedja"),
                   plotOutput("proj_resultatkedja_diagram")
                   )
-        )
-        )
+          )
         ),
 
 
@@ -159,9 +160,9 @@ shinyUI(
                       plotOutput('ks_kommun_diagram')
                       )
                  )
-          )
-      )
-    ),
+          ),
+
+
 
       tabPanel('Om',
       p('Beskriv applikationen här. Viktigt att notera:
@@ -169,8 +170,8 @@ shinyUI(
                        För företagsstöd görs normalt sett en utbetalning, men det förekommer att den sker kalenderåret efter ansökan beviljades.
                        För projektstöd görs utbetalningar ungefär var 4:e månad. Projektens löptid är allt ifrån 3 månader till 3 år, ibland med förlängning.
                        De beviljade totalsummorna för projektmedel under ett visst år förväntas således betalas ut under en treårsperiod.
-                       Utbetalningar ska även motiveras med faktiska och godkända kostnader, varför det kan finnas skillnad mellan beviljat belopp och faktiskt utbetalt belopp.'))
-    ),
+                       Utbetalningar ska även motiveras med faktiska och godkända kostnader, varför det kan finnas skillnad mellan beviljat belopp och faktiskt utbetalt belopp.'
+        ),
 
     tags$div(
       class = 'rd-footer',
@@ -179,6 +180,11 @@ shinyUI(
         href = 'mailto:samhallsanalys@regiondalarna.se',
         'samhallsanalys@regiondalarna.se'
       )
+
     )
   )
 )
+)
+)
+
+

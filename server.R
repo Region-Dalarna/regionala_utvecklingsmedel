@@ -87,7 +87,7 @@ shinyServer(function(input, output, session) {
       theme_minimal()
   })
 
-# Fördelning utifrån nationella strategins kategorier och resultatkedjor
+# Fördelning utifrån nationella strategins kategorier och resultatkedjor, obs ta bort år 2018 som saknar data.
 
   output$proj_nat_strat_diagram <- renderPlot({
     req(input$proj_ar)
@@ -103,6 +103,7 @@ shinyServer(function(input, output, session) {
         group_by(nat_strat_ren, beslut_ar) %>%
         summarise(varde = n_distinct(arende), .groups = "drop")
       y_label <- "Antal ärenden"
+
     } else {
       plot_data <- proj_data() %>%
         group_by(nat_strat_ren, beslut_ar) %>%
@@ -111,9 +112,10 @@ shinyServer(function(input, output, session) {
     }
 
     plot_data %>%
-      filter(!is.na(nat_strat_ren)) %>%
-      ggplot(aes(x = nat_strat_ren, y = varde, fill = factor(beslut_ar))) +
-      geom_col(position = "dodge") +
+      filter(beslut_ar != 2018, !is.na(nat_strat_ren)) %>%
+      mutate(nat_strat_kort = str_trunc(nat_strat_ren, width = 20, ellipsis = "...")) %>%
+      ggplot(aes(x = nat_strat_kort, y = varde, fill = factor(beslut_ar))) +
+      geom_col(position = "stack") +
       labs(
         title = "Fördelning per nationellt strategiområde",
         x = "Strategiområde",
@@ -124,31 +126,34 @@ shinyServer(function(input, output, session) {
       theme(axis.text.x = element_text(angle = 45, hjust = 1))
   })
 
+
   output$proj_resultatkedja_diagram <- renderPlot({
     req(input$proj_ar)
 
     if (input$proj_matt == "belopp") {
       plot_data <- proj_data() %>%
-        group_by(resultatkedja, beslut_ar) %>%
+        group_by(resultatkedja_ren, beslut_ar) %>%
         summarise(varde = sum(beviljat_belopp, na.rm = TRUE), .groups = "drop")
       y_label <- "Summa beviljat belopp (kr)"
+
     } else if (input$proj_matt == "antal") {
       plot_data <- proj_data() %>%
-        group_by(resultatkedja, beslut_ar) %>%
+        group_by(resultatkedja_ren, beslut_ar) %>%
         summarise(varde = n_distinct(arende), .groups = "drop")
       y_label <- "Antal ärenden"
+
     } else {
       plot_data <- proj_data() %>%
-        group_by(resultatkedja, beslut_ar) %>%
+        group_by(resultatkedja_ren, beslut_ar) %>%
         summarise(varde = sum(utbet_belopp, na.rm = TRUE), .groups = "drop")
       y_label <- "Utbetalt belopp (kr)"
     }
 
     plot_data %>%
-      filter(!is.na(resultatkedja)) %>%
-    mutate(resultatkedja = str_trunc(resultatkedja, width = 20, ellipsis = "...")) %>%
-      ggplot(aes(x = resultat, y = varde, fill = factor(beslut_ar))) +
-      geom_col(position = "dodge") +
+      filter(beslut_ar != 2018, !is.na(resultatkedja_ren)) %>%
+      mutate(resultatkedja_kort = str_trunc(resultatkedja_ren, width = 20, ellipsis = "...")) %>%
+      ggplot(aes(x = resultatkedja_kort, y = varde, fill = factor(beslut_ar))) +
+      geom_col(position = "stack") +
       labs(
         title = "Fördelning per resultatkedja",
         x = "Resultatkedja",

@@ -19,7 +19,7 @@ library(lubridate)
 # Allmänna options - TRUE = visa inte R-felmeddelanden i appen, FALSE = visa felmeddelanden från R på webben
 options(shiny.sanitize.errors = FALSE)
 
-# Läs in data
-data_trans <- readRDS("G:/skript/projekt/rum/data_trans_clean.rds")
-data_adresser<- readRDS("G:/skript/projekt/rum/data_adresser_clean.rds")
-data_finans<- readRDS("G:/skript/projekt/rum/data_finans_clean.rds")
+# Läs in data från projektmappen
+data_trans    <- readRDS("data/data_trans_clean.rds")
+data_adresser <- readRDS("data/data_adresser_clean.rds")
+data_finans   <- readRDS("data/data_finans_clean.rds")
