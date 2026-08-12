@@ -11,6 +11,10 @@ shinyServer(function(input, output, session) {
              beslut_ar %in% input$valda_ar)
   })
 
+  output$kpi_ar_text <- renderText({
+    paste0("Nyckeltal f\u00f6r \u00e5r ", formatera_ar_intervall(input$valda_ar))
+  })
+
   output$kpi_totalt_beviljat <- renderText({
     varde <- bas1_data() |>
       summarise(v = sum(beviljat_belopp, na.rm = TRUE)) |>
@@ -25,6 +29,14 @@ shinyServer(function(input, output, session) {
     scales::label_number(big.mark = " ")(varde)
   })
 
+  output$kpi_antal_arenden_per_ar <- renderText({
+    df       <- bas1_data()
+    antal_ar <- n_distinct(df$beslut_ar)
+    antal    <- n_distinct(df$arende)
+    snitt    <- if (antal_ar > 0) antal / antal_ar else 0
+    paste0("\u2248 ", scales::label_number(big.mark = " ", accuracy = 1)(snitt), " / \u00e5r")
+  })
+
   output$kpi_snitt_ar <- renderText({
     df        <- bas1_data()
     antal_ar  <- n_distinct(df$beslut_ar)
@@ -37,6 +49,10 @@ shinyServer(function(input, output, session) {
     plot_data <- bas1_data() |>
       group_by(beslut_ar, stodtyp) |>
       summarise(summa = sum(beviljat_belopp, na.rm = TRUE), .groups = "drop") |>
+      # Fyll på med 0 för år/stödtyp-kombinationer som saknar data, så att
+      # position = "dodge" alltid delar upp bredden mellan samma antal
+      # grupper - annars blir staplarna bredare de år en stödtyp saknas.
+      complete(beslut_ar, stodtyp, fill = list(summa = 0)) |>
       mutate(
         stodtyp_etikett = etiketter_stodtyp[stodtyp],
         tooltip_text    = paste0("Stödtyp: ", stodtyp_etikett, "<br>",
@@ -50,7 +66,8 @@ shinyServer(function(input, output, session) {
       geom_col_interactive(position = "dodge") +
       scale_fill_manual(values = farger_stodtyp, labels = etiketter_stodtyp) +
       labs(title = "Beviljat belopp per år", x = "År",
-           y = "Summa beviljat belopp (kr)", fill = "Stödtyp") +
+           y = "Summa beviljat belopp (kr)", fill = "Stödtyp",
+           caption = KALLA_TEXT) +
       tema_rd_diagram() +
       skala_y_tal()
 
@@ -79,7 +96,7 @@ shinyServer(function(input, output, session) {
                                tooltip = tooltip_text, data_id = factor(beslut_ar))) +
       geom_col_interactive(fill = farg_standard) +
       labs(title = "Projektmedel per kalenderår", x = "År",
-           y = y_lab_matt(input$proj_matt)) +
+           y = y_lab_matt(input$proj_matt), caption = KALLA_TEXT) +
       tema_rd_diagram() +
       skala_y_tal() +
       theme(legend.position = "none")
@@ -110,7 +127,8 @@ shinyServer(function(input, output, session) {
       geom_col_interactive() +
       scale_fill_manual(values = farger_ar) +
       labs(title = "Utbetalningar per år fördelat efter beslutsår",
-           x = "Utbetalningsår", y = "Utbetalt belopp (kr)", fill = "Beslutsår") +
+           x = "Utbetalningsår", y = "Utbetalt belopp (kr)", fill = "Beslutsår",
+           caption = KALLA_TEXT) +
       tema_rd_diagram() +
       skala_y_tal()
 
@@ -148,7 +166,9 @@ shinyServer(function(input, output, session) {
                                data_id = interaction(kategori_full, beslut_ar))) +
       geom_col_interactive(position = "stack") +
       scale_fill_manual(values = farger_ar) +
-      labs(title = titel, x = x_lab, y = y_lab_matt(input$proj_matt), fill = "Beslutsår") +
+      labs(title = titel,
+           x = x_lab, y = y_lab_matt(input$proj_matt), fill = "Beslutsår",
+           caption = KALLA_TEXT) +
       tema_rd_diagram() +
       skala_y_tal() +
       theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -177,12 +197,15 @@ shinyServer(function(input, output, session) {
                                    matt_etiketter[[input$ftg_matt]], ": ",
                                    format_varde_matt(varde, input$ftg_matt)))
 
+    # X-axeln visar kön, inte år - lägg därför till valda år i rubriken.
+    ar_text <- formatera_ar_intervall(ftg_data()$beslut_ar)
+
     p <- ggplot(plot_data, aes(x = vd_kon_ren, y = varde, fill = vd_kon_ren,
                                tooltip = tooltip_text, data_id = vd_kon_ren)) +
       geom_col_interactive() +
       scale_fill_manual(values = farger_kon) +
-      labs(title = "Könsfördelning på VD-posten", x = "Kön",
-           y = y_lab_matt(input$ftg_matt)) +
+      labs(title = paste0("Könsfördelning på VD-posten år ", ar_text),
+           x = "Kön", y = y_lab_matt(input$ftg_matt), caption = KALLA_TEXT) +
       tema_rd_diagram() +
       skala_y_tal() +
       theme(legend.position = "none")
@@ -236,11 +259,16 @@ shinyServer(function(input, output, session) {
       geom_col_interactive() +
       scale_fill_manual(values = farger_ar) +
       labs(title = "Utbetalningar per år fördelat efter beslutsår",
-           x = "Utbetalningsår", y = "Utbetalt belopp (kr)", fill = "Beslutsår") +
+           x = "Utbetalningsår", y = "Utbetalt belopp (kr)", fill = "Beslutsår",
+           caption = KALLA_TEXT) +
       tema_rd_diagram() +
       skala_y_tal()
 
     girafe(ggobj = p, options = opts_girafe_std(), width_svg = 8, height_svg = 5.2)
+  })
+
+  output$ftg_kpi_ar_text <- renderText({
+    paste0("Nyckeltal f\u00f6r \u00e5r ", formatera_ar_intervall(input$ftg_ar))
   })
 
   output$ftg_kpi_utbetalt <- renderText({
