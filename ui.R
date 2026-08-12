@@ -18,6 +18,7 @@ shinyUI(
       )
     ),
     tabsetPanel(
+
       tabPanel('Beviljade 1:1-medel',
                fluidRow(
                column(2,
@@ -45,46 +46,84 @@ shinyUI(
           )
         ),
 
-      tabPanel('Projektmedel',
-               # Rad 1 - filter + två diagram
-               fluidRow(
-                 column(2,
-                        checkboxGroupInput(
-                          inputId  = "proj_ar",
-                          label    = "Välj år:",
-                          choices  = sort(unique(data_trans$beslut_ar)),
-                          selected = sort(unique(data_trans$beslut_ar))
-                        ),
-                        radioButtons(
-                          inputId  = "proj_matt",
-                          label    = "Visa som:",
-                          choices  = c("Beviljat belopp" = "belopp", "Antal ärenden" = "antal"),
-                          selected = c("belopp")
-                        )
-                 ),
-                column(5,
-                h3('Beviljade projektmedel per kalenderår'),
-                plotOutput('proj_ar_diagram')
-                ),
-                column (5,
-                  h3("Utbetalningar per beslutskohort"),
-                plotOutput("proj_kohort_diagram")
-                )
-                ),
- # Rad 2 två diagram
-            fluidRow(
+    tabPanel('Projektmedel',
+              # Rad 1 - filter + två diagram
+              fluidRow(
+              column(2,
+                   checkboxGroupInput(
+                     inputId  = "proj_ar",
+                     label    = "Välj år:",
+                     choices  = sort(unique(data_trans$beslut_ar)),
+                     selected = sort(unique(data_trans$beslut_ar))
+                   ),
+                   radioButtons(
+                     inputId  = "proj_matt",
+                     label    = "Visa som:",
+                     choices  = c("Beviljat belopp" = "belopp", "Antal ärenden" = "antal"),
+                     selected = c("belopp")
+                   )
+            ),
+            column(5,
+                   h3('Beviljade projektmedel per kalenderår'),
+                   plotOutput('proj_ar_diagram')
+            ),
+            column (5,
+                    h3("Utbetalningar per beslutskohort"),
+                    plotOutput("proj_kohort_diagram")
+            )
+          ),
+          # Rad 2 två diagram
+          fluidRow(
             column(6,
-             h3("Fördelning per nationellt strategiområde"),
-             plotOutput("proj_nat_strat_diagram")
-           ),
+                   h3("Fördelning per nationellt strategiområde"),
+                   plotOutput("proj_nat_strat_diagram")
+            ),
 
-           column(6,
-                  h3("Fördelning per resultatkedja"),
-                  plotOutput("proj_resultatkedja_diagram")
-                  )
+            column(6,
+                   h3("Fördelning per resultatkedja"),
+                   plotOutput("proj_resultatkedja_diagram")
+            )
           )
         ),
 
+    # tabPanel('Projektmedel 2',
+    #       # Rad 1 - filter + två diagram
+    #       fluidRow(
+    #         column(2,
+    #                checkboxGroupInput(
+    #                  inputId  = "proj_ar",
+    #                  label    = "Välj år:",
+    #                  choices  = sort(unique(data_trans$beslut_ar)),
+    #                  selected = sort(unique(data_trans$beslut_ar))
+    #                ),
+    #                radioButtons(
+    #                  inputId  = "proj_matt",
+    #                  label    = "Visa som:",
+    #                  choices  = c("Beviljat belopp" = "belopp", "Antal ärenden" = "antal"),
+    #                  selected = c("belopp")
+    #                )
+    #         ),
+    #         column(5,
+    #                h3('Beviljade projektmedel per projektägare'),
+    #                plotOutput('proj_agare_diagram')
+    #         ),
+    #         column (5,
+    #                 h3(""),
+    #                 plotOutput("")
+    #         )
+    #       ),
+          # Rad 2 två diagram
+
+
+    tabPanel('Projektstatus',
+                      fluidRow(
+                        column(12,
+                               h3("Projektstatus per kvartal"),
+                               p("Filtrera på år och kvartal i kolumnrubrikerna nedan."),
+                               DTOutput("proj_status_tabell")
+                        )
+                      )
+             ),
 
       tabPanel('Företagsstöd',
                # Rad 1 - filter + två diagram

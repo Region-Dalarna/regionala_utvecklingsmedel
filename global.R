@@ -11,6 +11,7 @@ library(tidyr)
 library(readr)
 library(ggplot2)
 library(lubridate)
+library(here)
 
 # innehåller kopplingar till databaserna, ink lösenord som ska konfigureras: source("https://raw.githubusercontent.com/Region-Dalarna/funktioner/main/func_shinyappar.R", encoding = "utf-8", echo = FALSE)
 
@@ -20,6 +21,7 @@ library(lubridate)
 options(shiny.sanitize.errors = FALSE)
 
 # Läs in data från projektmappen
-data_trans    <- readRDS("data/data_trans_clean.rds")
-data_adresser <- readRDS("data/data_adresser_clean.rds")
-data_finans   <- readRDS("data/data_finans_clean.rds")
+
+data_trans    <- readRDS(here ("data/data_trans_clean.rds"))
+data_adresser <- readRDS(here ("data/data_adresser_clean.rds"))
+data_finans   <- readRDS(here ("data/data_finans_clean.rds"))
