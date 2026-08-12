@@ -1,4 +1,3 @@
-source('global.R')
 shinyUI(
   fluidPage(
     useShinyjs(),
@@ -52,6 +51,7 @@ shinyUI(
                                    )
                           ),
                           tags$div(class = 'rd-main',
+                                   tags$div(class = 'rd-kpi-sektion-titel', textOutput('kpi_ar_text', inline = TRUE)),
                                    tags$div(class = 'rd-kpi-row',
                                             tags$div(class = 'rd-kpi',
                                                      tags$div(class = 'rd-kpi__label', 'Totalt beviljat'),
@@ -59,7 +59,8 @@ shinyUI(
                                             ),
                                             tags$div(class = 'rd-kpi',
                                                      tags$div(class = 'rd-kpi__label', 'Antal ärenden'),
-                                                     tags$div(class = 'rd-kpi__value', textOutput('kpi_antal_arenden', inline = TRUE))
+                                                     tags$div(class = 'rd-kpi__value', textOutput('kpi_antal_arenden', inline = TRUE)),
+                                                     tags$div(class = 'rd-kpi__delta', textOutput('kpi_antal_arenden_per_ar', inline = TRUE))
                                             ),
                                             tags$div(class = 'rd-kpi',
                                                      tags$div(class = 'rd-kpi__label', 'Snitt per år'),
@@ -67,7 +68,6 @@ shinyUI(
                                             )
                                    ),
                                    tags$div(class = 'rd-card',
-                                            h2('Beviljat belopp per år'),
                                             girafeOutput('stapeldiagram_ar_stod', height = "420px")
                                    )
                           )
@@ -105,20 +105,17 @@ shinyUI(
                                    fluidRow(
                                      column(6,
                                             tags$div(class = 'rd-card',
-                                                     h2('Beviljade projektmedel per kalenderår'),
                                                      girafeOutput('proj_ar_diagram', height = "380px")
                                             )
                                      ),
                                      column(6,
                                             tags$div(class = 'rd-card',
-                                                     h2('Utbetalningar per beslutskohort'),
                                                      girafeOutput('proj_kohort_diagram', height = "380px")
                                             )
                                      )
                                    ),
                                    tags$div(class = 'rd-card',
-                                            tags$div(style = "display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;",
-                                                     h2('Fördelning', style = "margin:0;"),
+                                            tags$div(style = "display:flex; justify-content:flex-end; flex-wrap:wrap; gap:10px; margin-bottom:12px;",
                                                      tags$div(class = 'rd-segmented',
                                                               radioGroupButtons(
                                                                 inputId  = "proj_fordelning_typ",
@@ -167,13 +164,11 @@ shinyUI(
                                               fluidRow(
                                                 column(6,
                                                        tags$div(class = 'rd-card', style = "margin-top:16px;",
-                                                                h2("Fördelning efter VD:ns kön"),
                                                                 girafeOutput('ftg_kon_diagram', height = "380px")
                                                        )
                                                 ),
                                                 column(6,
                                                        tags$div(class = 'rd-card', style = "margin-top:16px;",
-                                                                h2("Fördelning per bransch"),
                                                                 girafeOutput('ftg_bransch_diagram', height = "380px")
                                                        )
                                                 )
@@ -183,13 +178,11 @@ shinyUI(
                                               fluidRow(
                                                 column(6,
                                                        tags$div(class = 'rd-card', style = "margin-top:16px;",
-                                                                h2("Fördelning per kommun"),
                                                                 girafeOutput('ftg_kommun_diagram', height = "420px")
                                                        )
                                                 ),
                                                 column(6,
                                                        tags$div(class = 'rd-card', style = "margin-top:16px;",
-                                                                h2("Fördelning klassificering 1"),
                                                                 girafeOutput('ftg_lokal_1_diagram', height = "420px")
                                                        )
                                                 )
@@ -199,12 +192,14 @@ shinyUI(
                                               fluidRow(
                                                 column(8,
                                                        tags$div(class = 'rd-card', style = "margin-top:16px;",
-                                                                h2("Beslutsår i relation till utbetalningsår"),
                                                                 girafeOutput('ftg_kohort_diagram', height = "420px")
                                                        )
                                                 ),
                                                 column(4,
-                                                       tags$div(class = 'rd-kpi', style = "margin-top:16px;",
+                                                       tags$div(class = 'rd-kpi-sektion-titel', style = "margin-top:16px;",
+                                                                textOutput('ftg_kpi_ar_text', inline = TRUE)
+                                                       ),
+                                                       tags$div(class = 'rd-kpi',
                                                                 tags$div(class = 'rd-kpi__label', 'Totalt utbetalt'),
                                                                 tags$div(class = 'rd-kpi__value', textOutput('ftg_kpi_utbetalt', inline = TRUE))
                                                        ),
@@ -249,7 +244,6 @@ shinyUI(
                           ),
                           tags$div(class = 'rd-main',
                                    tags$div(class = 'rd-card',
-                                            h2('Belopp per kommun'),
                                             girafeOutput('ks_kommun_diagram', height = "460px")
                                    )
                           )
@@ -259,13 +253,18 @@ shinyUI(
         # ============ FLIK 5: Om ============
         tabPanel('Om',
                  tags$div(class = 'rd-card', style = "margin-top:16px; max-width:900px;",
-                          p('Beskriv applikationen här. Viktigt att notera:
-              Beviljade belopp registreras vid den tidpunkt då beslut fattas. Själva utbetalningen sker vid en eller flera senare tillfällen.
-              För företagsstöd görs normalt sett en utbetalning, men det förekommer att den sker kalenderåret efter ansökan beviljades.
-              För projektstöd görs utbetalningar ungefär var 4:e månad. Projektens löptid är allt ifrån 3 månader till 3 år, ibland med förlängning.
-              De beviljade totalsummorna för projektmedel under ett visst år förväntas således betalas ut under en treårsperiod.
-              Utbetalningar ska även motiveras med faktiska och godkända kostnader, varför det kan finnas skillnad mellan beviljat belopp och faktiskt utbetalt belopp.'
-                          )
+                          h2('Viktigt att notera'),
+                          p('Beviljade belopp registreras vid den tidpunkt då beslut fattas.
+              Själva utbetalningen sker vid en eller flera senare tillfällen.'),
+                          p(tags$strong('Företagsstöd'), ' \u2013 görs normalt sett som en utbetalning,
+              men det förekommer att den sker kalenderåret efter ansökan beviljades.'),
+                          p(tags$strong('Projektstöd'), ' \u2013 utbetalningar görs ungefär var 4:e månad.
+              Projektens löptid är allt ifrån 3 månader till 3 år, ibland med förlängning.
+              De beviljade totalsummorna för projektmedel under ett visst år förväntas
+              därför betalas ut under en treårsperiod.'),
+                          p('Utbetalningar ska även motiveras med faktiska och godkända kostnader,
+              varför det kan finnas skillnad mellan beviljat belopp och faktiskt
+              utbetalt belopp.')
                  )
         )
       )

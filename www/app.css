@@ -63,7 +63,19 @@ html, body { overflow-x: hidden; }
 /* ---- Sidopanel: dämpa Bootstraps grå "well"-bakgrund -------------------- */
 .rd-sidebar.well { background: #fff; }
 
-/* ---- Källtext under diagram --------------------------------------------- */
+/* ---- Rubrik ovanför en KPI-rad, t.ex. "Nyckeltal för år 2018-2026" -----
+   Samma versala etikettstil som .rd-kpi__label, men lite kraftigare och
+   med en kant som binder ihop rubriken visuellt med kortraden under. */
+.rd-kpi-sektion-titel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--rd-primary-dark, #0f7090);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding-left: 10px;
+  border-left: 3px solid var(--rd-accent, #54a1bd);
+  margin-bottom: 10px;
+}
 .rd-caption {
   margin-top: 10px;
   font-size: var(--rd-fs-micro);
