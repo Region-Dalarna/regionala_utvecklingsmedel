@@ -1,6 +1,7 @@
 source('global.R')
 shinyUI(
   fluidPage(
+    useShinyjs(),
     tags$head(
       tags$link(rel = 'icon', type = 'image/x-icon', href = 'favicon.ico'),
       tags$link(rel = 'stylesheet', type = 'text/css', href = 'regiondalarna_ruf.css'),
@@ -8,7 +9,7 @@ shinyUI(
     ),
     tags$div(
       class = 'rd-header',
-      tags$div(class = 'rd-header__title', 'regionala_utvecklingsmedel'),
+      tags$div(class = 'rd-header__title', 'Regionala utvecklingsmedel'),
       tags$a(
         class  = 'rd-header__right',
         href   = 'https://www.regiondalarna.se',
@@ -17,174 +18,266 @@ shinyUI(
         tags$span('Samhällsanalys')
       )
     ),
-    tabsetPanel(
-      tabPanel('Beviljade 1:1-medel',
-               fluidRow(
-               column(2,
-               checkboxGroupInput(
-                 inputId  = "valda_ar",
-                 label    = "Välj år:",
-                 choices  = sort(unique(data_trans$beslut_ar)),
-                 selected = sort(unique(data_trans$beslut_ar))
-               ),
 
-               checkboxGroupInput(
-                 inputId  = "valda_stodtyper",
-                 label    = "Välj stödtyp:",
-                 choices = c("Projektmedel"        = "PROJ",
-                             "Företagsstöd"        = "FTG",
-                             "Kommersiell service" = "KS"),
-                 selected = c("PROJ", "FTG", "KS")
+    tags$div(
+      style = "max-width:1400px; margin:0 auto; padding: 0 24px;",
+
+      tabsetPanel(
+        id = "huvudflikar",
+
+        # ============ FLIK 1: Beviljade 1:1-medel ============
+        tabPanel('Beviljade 1:1-medel',
+                 tags$div(class = 'rd-app',
+                          tags$div(class = 'rd-sidebar',
+                                   h3('Filter'),
+                                   tags$div(class = 'rd-field',
+                                            pickerInput(
+                                              inputId  = "valda_ar",
+                                              label    = "Välj år:",
+                                              choices  = sort(unique(data_trans$beslut_ar)),
+                                              selected = sort(unique(data_trans$beslut_ar)),
+                                              multiple = TRUE,
+                                              options  = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3", countSelectedText = "{0} år valda")
+                                            )
+                                   ),
+                                   tags$div(class = 'rd-field',
+                                            checkboxGroupInput(
+                                              inputId  = "valda_stodtyper",
+                                              label    = "Välj stödtyp:",
+                                              choices  = c("Projektmedel"        = "PROJ",
+                                                           "Företagsstöd"        = "FTG",
+                                                           "Kommersiell service" = "KS"),
+                                              selected = c("PROJ", "FTG", "KS")
+                                            )
+                                   )
+                          ),
+                          tags$div(class = 'rd-main',
+                                   tags$div(class = 'rd-kpi-row',
+                                            tags$div(class = 'rd-kpi',
+                                                     tags$div(class = 'rd-kpi__label', 'Totalt beviljat'),
+                                                     tags$div(class = 'rd-kpi__value', textOutput('kpi_totalt_beviljat', inline = TRUE))
+                                            ),
+                                            tags$div(class = 'rd-kpi',
+                                                     tags$div(class = 'rd-kpi__label', 'Antal ärenden'),
+                                                     tags$div(class = 'rd-kpi__value', textOutput('kpi_antal_arenden', inline = TRUE))
+                                            ),
+                                            tags$div(class = 'rd-kpi',
+                                                     tags$div(class = 'rd-kpi__label', 'Snitt per år'),
+                                                     tags$div(class = 'rd-kpi__value', textOutput('kpi_snitt_ar', inline = TRUE))
+                                            )
+                                   ),
+                                   tags$div(class = 'rd-card',
+                                            h2('Beviljat belopp per år'),
+                                            girafeOutput('stapeldiagram_ar_stod', height = "420px")
+                                   )
+                          )
                  )
-               ),
-
-               column(10,
-               h3('Beviljat belopp per år'),
-               plotOutput('stapeldiagram_ar_stod')
-              )
-          )
         ),
 
-      tabPanel('Projektmedel',
-               # Rad 1 - filter + två diagram
-               fluidRow(
-                 column(2,
-                        checkboxGroupInput(
-                          inputId  = "proj_ar",
-                          label    = "Välj år:",
-                          choices  = sort(unique(data_trans$beslut_ar)),
-                          selected = sort(unique(data_trans$beslut_ar))
-                        ),
-                        radioButtons(
-                          inputId  = "proj_matt",
-                          label    = "Visa som:",
-                          choices  = c("Beviljat belopp" = "belopp", "Antal ärenden" = "antal"),
-                          selected = c("belopp")
-                        )
-                 ),
-                column(5,
-                h3('Beviljade projektmedel per kalenderår'),
-                plotOutput('proj_ar_diagram')
-                ),
-                column (5,
-                  h3("Utbetalningar per beslutskohort"),
-                plotOutput("proj_kohort_diagram")
-                )
-                ),
- # Rad 2 två diagram
-            fluidRow(
-            column(6,
-             h3("Fördelning per nationellt strategiområde"),
-             plotOutput("proj_nat_strat_diagram")
-           ),
-
-           column(6,
-                  h3("Fördelning per resultatkedja"),
-                  plotOutput("proj_resultatkedja_diagram")
-                  )
-          )
+        # ============ FLIK 2: Projektmedel ============
+        tabPanel('Projektmedel',
+                 tags$div(class = 'rd-app',
+                          tags$div(class = 'rd-sidebar',
+                                   h3('Filter'),
+                                   tags$div(class = 'rd-field',
+                                            pickerInput(
+                                              inputId  = "proj_ar",
+                                              label    = "Välj år:",
+                                              choices  = sort(unique(data_trans$beslut_ar)),
+                                              selected = sort(unique(data_trans$beslut_ar)),
+                                              multiple = TRUE,
+                                              options  = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3", countSelectedText = "{0} år valda")
+                                            )
+                                   ),
+                                   tags$div(class = 'rd-field',
+                                            tags$label(class = 'rd-label', 'Visa som:'),
+                                            tags$div(class = 'rd-segmented',
+                                                     radioGroupButtons(
+                                                       inputId  = "proj_matt",
+                                                       label    = NULL,
+                                                       choices  = c("Beviljat belopp" = "belopp", "Antal ärenden" = "antal"),
+                                                       selected = "belopp"
+                                                     )
+                                            )
+                                   )
+                          ),
+                          tags$div(class = 'rd-main',
+                                   fluidRow(
+                                     column(6,
+                                            tags$div(class = 'rd-card',
+                                                     h2('Beviljade projektmedel per kalenderår'),
+                                                     girafeOutput('proj_ar_diagram', height = "380px")
+                                            )
+                                     ),
+                                     column(6,
+                                            tags$div(class = 'rd-card',
+                                                     h2('Utbetalningar per beslutskohort'),
+                                                     girafeOutput('proj_kohort_diagram', height = "380px")
+                                            )
+                                     )
+                                   ),
+                                   tags$div(class = 'rd-card',
+                                            tags$div(style = "display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;",
+                                                     h2('Fördelning', style = "margin:0;"),
+                                                     tags$div(class = 'rd-segmented',
+                                                              radioGroupButtons(
+                                                                inputId  = "proj_fordelning_typ",
+                                                                label    = NULL,
+                                                                choices  = c("Strategiområde" = "strat", "Resultatkedja" = "kedja"),
+                                                                selected = "strat"
+                                                              )
+                                                     )
+                                            ),
+                                            girafeOutput('proj_fordelning_diagram', height = "420px")
+                                   )
+                          )
+                 )
         ),
 
-
-      tabPanel('Företagsstöd',
-               # Rad 1 - filter + två diagram
-               fluidRow(
-                 column(3,
-                        checkboxGroupInput(
-                          inputId  = "ftg_ar",
-                          label    = "Välj år:",
-                          choices  = sort(unique(data_trans$beslut_ar)),
-                          selected = sort(unique(data_trans$beslut_ar))
-                        ),
-                        radioButtons(
-                          inputId  = "ftg_matt",
-                          label    = "Visa som:",
-                          choices  = c("Beviljat belopp" = "belopp", "Antal ärenden" = "antal", "Utbetalt belopp" = "utbet"),
-                          selected = c("belopp")
-                        )
-                 ),
-                 column(4,
-                        h3("Fördelning efter VD:ns kön"),
-                        plotOutput("ftg_kon_diagram")
-                 ),
-                 column(5,
-                        h3("Fördelning per bransch"),
-                        plotOutput("ftg_bransch_diagram")
+        # ============ FLIK 3: Företagsstöd ============
+        tabPanel('Företagsstöd',
+                 tags$div(class = 'rd-app',
+                          tags$div(class = 'rd-sidebar',
+                                   h3('Filter'),
+                                   tags$div(class = 'rd-field',
+                                            pickerInput(
+                                              inputId  = "ftg_ar",
+                                              label    = "Välj år:",
+                                              choices  = sort(unique(data_trans$beslut_ar)),
+                                              selected = sort(unique(data_trans$beslut_ar)),
+                                              multiple = TRUE,
+                                              options  = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3", countSelectedText = "{0} år valda")
+                                            )
+                                   ),
+                                   tags$div(class = 'rd-field',
+                                            tags$label(class = 'rd-label', 'Visa som:'),
+                                            tags$div(class = 'rd-segmented',
+                                                     radioGroupButtons(
+                                                       inputId  = "ftg_matt",
+                                                       label    = NULL,
+                                                       choices  = c("Beviljat belopp" = "belopp", "Antal ärenden" = "antal", "Utbetalt belopp" = "utbet"),
+                                                       selected = "belopp"
+                                                     )
+                                            )
+                                   )
+                          ),
+                          tags$div(class = 'rd-main',
+                                   tabsetPanel(
+                                     tabPanel('Översikt',
+                                              fluidRow(
+                                                column(6,
+                                                       tags$div(class = 'rd-card', style = "margin-top:16px;",
+                                                                h2("Fördelning efter VD:ns kön"),
+                                                                girafeOutput('ftg_kon_diagram', height = "380px")
+                                                       )
+                                                ),
+                                                column(6,
+                                                       tags$div(class = 'rd-card', style = "margin-top:16px;",
+                                                                h2("Fördelning per bransch"),
+                                                                girafeOutput('ftg_bransch_diagram', height = "380px")
+                                                       )
+                                                )
+                                              )
+                                     ),
+                                     tabPanel('Geografi',
+                                              fluidRow(
+                                                column(6,
+                                                       tags$div(class = 'rd-card', style = "margin-top:16px;",
+                                                                h2("Fördelning per kommun"),
+                                                                girafeOutput('ftg_kommun_diagram', height = "420px")
+                                                       )
+                                                ),
+                                                column(6,
+                                                       tags$div(class = 'rd-card', style = "margin-top:16px;",
+                                                                h2("Fördelning klassificering 1"),
+                                                                girafeOutput('ftg_lokal_1_diagram', height = "420px")
+                                                       )
+                                                )
+                                              )
+                                     ),
+                                     tabPanel('Utbetalningar',
+                                              fluidRow(
+                                                column(8,
+                                                       tags$div(class = 'rd-card', style = "margin-top:16px;",
+                                                                h2("Beslutsår i relation till utbetalningsår"),
+                                                                girafeOutput('ftg_kohort_diagram', height = "420px")
+                                                       )
+                                                ),
+                                                column(4,
+                                                       tags$div(class = 'rd-kpi', style = "margin-top:16px;",
+                                                                tags$div(class = 'rd-kpi__label', 'Totalt utbetalt'),
+                                                                tags$div(class = 'rd-kpi__value', textOutput('ftg_kpi_utbetalt', inline = TRUE))
+                                                       ),
+                                                       tags$div(class = 'rd-kpi', style = "margin-top:16px;",
+                                                                tags$div(class = 'rd-kpi__label', 'Andel av beviljat'),
+                                                                tags$div(class = 'rd-kpi__value', textOutput('ftg_kpi_andel', inline = TRUE))
+                                                       )
+                                                )
+                                              )
+                                     )
+                                   )
+                          )
                  )
-               ),
-               # Rad 2 - två diagram
-               fluidRow(
-                 column(6,
-                        h3("Fördelning per kommun"),
-                        plotOutput("ftg_kommun_diagram")
-                 ),
-                 column(6,
-                        h3("Fördelning lokal klassificering 1"),
-                        plotOutput("ftg_lokal_1_diagram")
-                 )
-      ),
-      # Rad 3 - två diagram
-      fluidRow(
-        column(6,
-               h3("Beslutsår i relation till utbetalningsår"),
-               plotOutput("ftg_kohort_diagram")
         ),
-        column(6,
-               h3(""),
-               plotOutput("")
+
+        # ============ FLIK 4: Kommersiell service ============
+        tabPanel('Kommersiell service',
+                 tags$div(class = 'rd-app',
+                          tags$div(class = 'rd-sidebar',
+                                   h3('Filter'),
+                                   tags$div(class = 'rd-field',
+                                            pickerInput(
+                                              inputId  = "ks_ar",
+                                              label    = "Välj år:",
+                                              choices  = sort(unique(data_trans$beslut_ar)),
+                                              selected = sort(unique(data_trans$beslut_ar)),
+                                              multiple = TRUE,
+                                              options  = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3", countSelectedText = "{0} år valda")
+                                            )
+                                   ),
+                                   tags$div(class = 'rd-field',
+                                            tags$label(class = 'rd-label', 'Visa som:'),
+                                            tags$div(class = 'rd-segmented',
+                                                     radioGroupButtons(
+                                                       inputId  = "ks_matt",
+                                                       label    = NULL,
+                                                       choices  = c("Beviljat belopp" = "belopp", "Antal ärenden" = "antal", "Utbetalt belopp" = "utbet"),
+                                                       selected = "belopp"
+                                                     )
+                                            )
+                                   )
+                          ),
+                          tags$div(class = 'rd-main',
+                                   tags$div(class = 'rd-card',
+                                            h2('Belopp per kommun'),
+                                            girafeOutput('ks_kommun_diagram', height = "460px")
+                                   )
+                          )
+                 )
+        ),
+
+        # ============ FLIK 5: Om ============
+        tabPanel('Om',
+                 tags$div(class = 'rd-card', style = "margin-top:16px; max-width:900px;",
+                          p('Beskriv applikationen här. Viktigt att notera:
+              Beviljade belopp registreras vid den tidpunkt då beslut fattas. Själva utbetalningen sker vid en eller flera senare tillfällen.
+              För företagsstöd görs normalt sett en utbetalning, men det förekommer att den sker kalenderåret efter ansökan beviljades.
+              För projektstöd görs utbetalningar ungefär var 4:e månad. Projektens löptid är allt ifrån 3 månader till 3 år, ibland med förlängning.
+              De beviljade totalsummorna för projektmedel under ett visst år förväntas således betalas ut under en treårsperiod.
+              Utbetalningar ska även motiveras med faktiska och godkända kostnader, varför det kan finnas skillnad mellan beviljat belopp och faktiskt utbetalt belopp.'
+                          )
+                 )
         )
       )
-      ),
-
-      tabPanel('Kommersiell service',
-               fluidRow(
-                 column(3,
-                        checkboxGroupInput(
-                          inputId  = "ks_ar",
-                          label    = "Välj år:",
-                          choices  = sort(unique(data_trans$beslut_ar)),
-                          selected = sort(unique(data_trans$beslut_ar))
-                        ),
-                        radioButtons(
-                          inputId  = "ks_matt",
-                          label    = "Visa som:",
-                          choices  = c("Beviljat belopp" = "belopp",
-                                       "Antal ärenden" = "antal",
-                                       "Utbetalt belopp" = "utbet"),
-                          selected = c("belopp")
-                        )
-                 ),
-
-                 column(9,
-                      h3('Belopp per kalenderår'),
-                      plotOutput('ks_kommun_diagram')
-                      )
-                 )
-          ),
-
-
-
-      tabPanel('Om',
-      p('Beskriv applikationen här. Viktigt att notera:
-                       Beviljade belopp registreras vid den tidpunkt då beslut fattas. Själva utbetalningen sker vid en eller flera senare tillfällen.
-                       För företagsstöd görs normalt sett en utbetalning, men det förekommer att den sker kalenderåret efter ansökan beviljades.
-                       För projektstöd görs utbetalningar ungefär var 4:e månad. Projektens löptid är allt ifrån 3 månader till 3 år, ibland med förlängning.
-                       De beviljade totalsummorna för projektmedel under ett visst år förväntas således betalas ut under en treårsperiod.
-                       Utbetalningar ska även motiveras med faktiska och godkända kostnader, varför det kan finnas skillnad mellan beviljat belopp och faktiskt utbetalt belopp.'
-        ),
+    ),
 
     tags$div(
       class = 'rd-footer',
-      'Samhällsanalys, Region Dalarna · ',
+      'Samhällsanalys, Region Dalarna \u00b7 ',
       tags$a(
         href = 'mailto:samhallsanalys@regiondalarna.se',
         'samhallsanalys@regiondalarna.se'
       )
-
     )
   )
 )
-)
-)
-
-

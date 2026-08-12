@@ -5,4 +5,81 @@
    kan överstyra den delade identiteten vid behov.
    ============================================================ */
 
-/* Lägg appspecifika regler här. */
+/* ---- App-specifika designtokens (utöver regiondalarna_ruf.css) ----
+   Kön- och stödtypsfärger enligt Region Dalarna. Motsvarande
+   hex-värden definieras även på R-sidan i global.R (farger_kon,
+   farger_stodtyp) så att diagram och CSS delar samma definition. */
+:root {
+  --rd-kon-kvinnor: #e2a855;   /* kvinnor/flickor */
+  --rd-kon-man:     #459079;   /* män/pojkar */
+
+  --rd-stod-proj:   #158daf;   /* projektmedel, = --rd-primary */
+  --rd-stod-ftg:    #00b4e4;   /* företagsstöd, = --rd-blue-bright */
+  --rd-stod-ks:     #54a1bd;   /* kommersiell service, = --rd-accent */
+}
+
+/* ---- Full bredd: bryt ut header/footer ur container-fluids -------------
+   15px sidopadding (Bootstrap 3). Det tar bort de grå "listerna" i
+   topphörnen och låter blå listen + footern gå kant-i-kant.
+   overflow-x:hidden är en säkerhetsspärr mot horisontell scroll. */
+html, body { overflow-x: hidden; }
+
+.rd-header,
+.rd-footer {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+/* ---- Segmenterade knappar (radioGroupButtons) för mått/fördelningsval -- */
+.rd-segmented { margin-bottom: 4px; }
+
+.rd-segmented .btn-group-container-sw {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.rd-segmented .radiobtn {
+  border: 1px solid var(--rd-border);
+  background: #fff;
+  color: var(--rd-text-muted);
+  border-radius: var(--rd-radius-sm) !important;
+  font-weight: 500;
+  padding: 6px 14px;
+  box-shadow: none;
+  transition: all 0.15s;
+}
+.rd-segmented .radiobtn:hover {
+  border-color: var(--rd-primary);
+  color: var(--rd-primary);
+}
+.rd-segmented .radiobtn.active,
+.rd-segmented .radiobtn.active:hover,
+.rd-segmented .radiobtn:active {
+  background: var(--rd-primary);
+  color: #fff;
+  border-color: var(--rd-primary);
+}
+
+/* ---- Sidopanel: dämpa Bootstraps grå "well"-bakgrund -------------------- */
+.rd-sidebar.well { background: #fff; }
+
+/* ---- Källtext under diagram --------------------------------------------- */
+.rd-caption {
+  margin-top: 10px;
+  font-size: var(--rd-fs-micro);
+  color: var(--rd-text-muted);
+}
+
+/* ---- pickerInput (shinyWidgets) i RD-stil ------------------------------- */
+.rd-field .bootstrap-select .dropdown-toggle {
+  border: 1px solid var(--rd-border);
+  border-radius: var(--rd-radius-sm);
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--rd-text);
+}
+.rd-field .bootstrap-select .dropdown-toggle:focus {
+  outline: none !important;
+  border-color: var(--rd-primary);
+  box-shadow: 0 0 0 3px var(--rd-accent-soft);
+}
