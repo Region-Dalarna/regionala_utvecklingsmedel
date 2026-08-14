@@ -43,7 +43,7 @@ options(scipen = 999)
 # hamta_data() vid behov när tabellerna finns på plats i skarp drift.
 # ============================================================
 
-data_sokvag_lokal <- "g:/skript/shiny_data/regionala_utvecklingsmedel/"
+data_sokvag_lokal <- "G:/skript/shiny_data/regionala_utvecklingsmedel/"
 
 hamta_data <- function() {
   tryCatch({
