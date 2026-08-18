@@ -251,20 +251,51 @@ shinyUI(
         ),
 
         # ============ FLIK 5: Om ============
-        tabPanel('Om',
+        tabPanel('Om rapporten',
                  tags$div(class = 'rd-card', style = "margin-top:16px; max-width:900px;",
-                          h2('Viktigt att notera'),
-                          p('Beviljade belopp registreras vid den tidpunkt då beslut fattas.
-              Själva utbetalningen sker vid en eller flera senare tillfällen.'),
-                          p(tags$strong('Företagsstöd'), ' \u2013 görs normalt sett som en utbetalning,
-              men det förekommer att den sker kalenderåret efter ansökan beviljades.'),
-                          p(tags$strong('Projektstöd'), ' \u2013 utbetalningar görs ungefär var 4:e månad.
-              Projektens löptid är allt ifrån 3 månader till 3 år, ibland med förlängning.
-              De beviljade totalsummorna för projektmedel under ett visst år förväntas
-              därför betalas ut under en treårsperiod.'),
-                          p('Utbetalningar ska även motiveras med faktiska och godkända kostnader,
+                          h2('Välkommen att utforska Region Dalarnas fördelning av 1:1-medel'),
+                          p('1:1-medel är en summa pengar (ca 70 mnkr per år till Dalarna) som regeringen
+              tilldelar regionerna, årsvis. Medlen ska användas för att stimulera regional
+              utveckling genom att bidra till målen i den nationella strategin för hållbar
+              regional utveckling (',
+                            tags$a(href = 'https://www.regeringen.se/contentassets/53af87d3b16b4f5087965691ee5fb922/nationell-strategi-for-hallbar-regional-utveckling-i-hela-landet-20212030/',
+                                   target = '_blank', rel = 'noopener',
+                                   'Nationell strategi för hållbar regional utveckling i hela landet 2021\u20132030'),
+                            ') samt målen i den regionala utvecklingsstrategin (',
+                            tags$a(href = 'https://www.regiondalarna.se/contentassets/c1cbe7a28fc640d3a5477a7b7a5f2002/dalastrategin-2030-upplaga-2026.pdf',
+                                   target = '_blank', rel = 'noopener',
+                                   'Dalastrategin 2030'),
+                            ').'
+                          ),
+                          p('Medlen söks och beviljas som medfinansiering till företagsinvesteringar, att
+              upprätthålla viss samhällsservice i glesbygd och till regionala
+              utvecklingsprojekt. Utvecklingsprojekt bedrivs av exempelvis kommuner,
+              företagsfrämjarorganisationer och länsstyrelsen, men även Region Dalarna driver
+              ibland utvecklingsprojekt med dessa medel. Utvecklingsprojekt finansieras ofta
+              med ca hälften 1:1-medel och hälften EU-medel, framförallt från ERUF
+              (Europeiska regionalfonden, ',
+                            tags$a(href = 'https://tillvaxtverket.se/tillvaxtverket/omtillvaxtverket/eufonder/regionalfonden/norramellansverige.3581.html',
+                                   target = '_blank', rel = 'noopener',
+                                   'Norra Mellansverige - Tillväxtverket'),
+                            ').'
+                          ),
+                          p(tags$strong('Viktigt att notera')),
+                          p('Det är regionala utvecklingsnämnden som beslutar om beloppen baserat på en
+              bedömning av inkomna ansökningar. Beviljade belopp registreras vid den
+              tidpunkt då beslut fattas. Själva utbetalningen sker vid en eller flera
+              senare tillfällen.'),
+                          p('Utbetalningar ska alltid motiveras med faktiska och godkända kostnader,
               varför det kan finnas skillnad mellan beviljat belopp och faktiskt
-              utbetalt belopp.')
+              utbetalt belopp.'),
+                          p(tags$strong('Företagsstöd'), ' \u2013 görs normalt sett som en utbetalning, det
+              tar olika lång tid för företagen att realisera sina investeringar och det
+              förekommer därför att ett beviljat stöd betalas ut nästkommande kalenderår.'),
+                          p(tags$strong('Projektstöd'), ' \u2013 Projektens löptid är allt ifrån 3 månader
+              till 3 år, ibland med förlängning. Utbetalningar för projektstöd görs
+              vanligtvis ungefär var 4:e månad. De beviljade totalsummorna för
+              projektmedel under ett visst år förväntas därför fördelas över en längre
+              tid, samtidigt som beslut från tidigare år ligger som fasta
+              betalningsåtaganden.')
                  )
         )
       )
