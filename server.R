@@ -177,7 +177,54 @@ shinyServer(function(input, output, session) {
   })
 
   # ============================================================
-  # FLIK 3: Företagsstöd
+  # FLIK 3: Projektstatus
+  # ============================================================
+
+  proj_status_data <- reactive({
+    req(input$status_ar, input$status_kvartal)
+
+    data_trans %>%
+      filter(stodtyp == "PROJ",
+             !is.na(startdatum),
+             !is.na(slutdatum)) %>%
+      distinct(projektnamn, organisationsnamn, startdatum, slutdatum, beslut_ar) %>%
+      rowwise() %>%
+      mutate(kvartal_lista = list(seq(
+        from = as.Date(paste0(year(startdatum), "-",
+                              sprintf("%02d", (quarter(startdatum) - 1) * 3 + 1), "-01")),
+        to   = as.Date(paste0(year(slutdatum), "-",
+                              sprintf("%02d", (quarter(slutdatum) - 1) * 3 + 1), "-01")),
+        by   = "quarter"
+      ))) %>%
+      unnest(kvartal_lista) %>%
+      mutate(
+        kalender_ar    = year(kvartal_lista),
+        kvartal        = paste0("Q", quarter(kvartal_lista)),
+        projekt_status = case_when(
+          year(startdatum)    == year(kvartal_lista) &
+            quarter(startdatum) == quarter(kvartal_lista) ~ "Uppstart",
+          year(slutdatum)     == year(kvartal_lista) &
+            quarter(slutdatum)  == quarter(kvartal_lista) ~ "Avslutas",
+          TRUE ~ "Pågående"
+        )
+      ) %>%
+      filter(kalender_ar %in% as.numeric(input$status_ar),
+             kvartal    == input$status_kvartal) %>%
+      select(organisationsnamn, projektnamn, projekt_status, startdatum, slutdatum)%>%
+    distinct()
+  })
+
+  output$proj_status_tabell <- renderDT({
+    proj_status_data() %>%
+      datatable(
+        colnames = c("Organisation", "Projektnamn", "Status", "Startdatum", "Slutdatum"),
+        options  = list(pageLength = 15),
+        filter   = "top"
+      )
+  })
+
+  # ============================================================
+  # FLIK 4: Företagsstöd
   # ============================================================
 
   ftg_data <- reactive({
@@ -287,7 +334,7 @@ shinyServer(function(input, output, session) {
   })
 
   # ============================================================
-  # FLIK 4: Kommersiell service
+  # FLIK 5: Kommersiell service
   # ============================================================
 
   ks_data <- reactive({

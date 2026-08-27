@@ -25,7 +25,7 @@ shinyUI(
         id = "huvudflikar",
 
         # ============ FLIK 1: Beviljade 1:1-medel ============
-        tabPanel('Beviljade 1:1-medel',
+        tabPanel('Beviljade reg. utvecklingsmedel',
                  tags$div(class = 'rd-app',
                           tags$div(class = 'rd-sidebar',
                                    h3('Filter'),
@@ -130,8 +130,50 @@ shinyUI(
                           )
                  )
         ),
+        # ============ FLIK 3: Projektstatus ============
 
-        # ============ FLIK 3: Företagsstöd ============
+        tabPanel('Projektstatus',
+                 tags$div(class = 'rd-card', style = "margin-top:16px;",
+                          # Filter som bred rad överst
+                          fluidRow(
+                            column(6,
+                                   pickerInput(
+                                     inputId  = "status_ar",
+                                     label    = "Välj år:",
+                                     choices  = sort(unique(year(c(data_trans$startdatum,
+                                                                   data_trans$slutdatum))[
+                                                                     year(c(data_trans$startdatum,
+                                                                            data_trans$slutdatum)) <= year(Sys.Date())])),
+                                     selected = sort(unique(year(c(data_trans$startdatum,
+                                                                   data_trans$slutdatum))[
+                                                                     year(c(data_trans$startdatum,
+                                                                            data_trans$slutdatum)) <= year(Sys.Date())])),
+                                     multiple = TRUE,
+                                     options  = pickerOptions(
+                                       actionsBox         = TRUE,
+                                       selectedTextFormat = "count > 3",
+                                       countSelectedText  = "{0} år valda"
+                                     )
+                                   )
+                            ),
+                            column(6,
+                                   tags$label(class = 'rd-label', 'Välj kvartal:'),
+                                   tags$div(class = 'rd-segmented',
+                                            radioGroupButtons(
+                                              inputId  = "status_kvartal",
+                                              label    = NULL,
+                                              choices  = c("Q1", "Q2", "Q3", "Q4"),
+                                              selected = paste0("Q", quarter(Sys.Date()))
+                                            )
+                                   )
+                            )
+                          ),
+                          h2('Projektstatus per kvartal'),
+                          p("Filtrera på kolumnerna i sökrutorna nedan."),
+                          DTOutput("proj_status_tabell")
+                 )
+        ),
+        # ============ FLIK 4: Företagsstöd ============
         tabPanel('Företagsstöd',
                  tags$div(class = 'rd-app',
                           tags$div(class = 'rd-sidebar',
@@ -164,12 +206,12 @@ shinyUI(
                                               fluidRow(
                                                 column(6,
                                                        tags$div(class = 'rd-card', style = "margin-top:16px;",
-                                                                girafeOutput('ftg_kon_diagram', height = "380px")
-                                                       )
+                                                                girafeOutput('ftg_bransch_diagram', height = "380px")
+                                                      )
                                                 ),
                                                 column(6,
                                                        tags$div(class = 'rd-card', style = "margin-top:16px;",
-                                                                girafeOutput('ftg_bransch_diagram', height = "380px")
+                                                                girafeOutput('ftg_kon_diagram', height = "380px")
                                                        )
                                                 )
                                               )
@@ -215,7 +257,7 @@ shinyUI(
                  )
         ),
 
-        # ============ FLIK 4: Kommersiell service ============
+        # ============ FLIK 5: Kommersiell service ============
         tabPanel('Kommersiell service',
                  tags$div(class = 'rd-app',
                           tags$div(class = 'rd-sidebar',
@@ -253,9 +295,9 @@ shinyUI(
         # ============ FLIK 5: Om ============
         tabPanel('Om rapporten',
                  tags$div(class = 'rd-card', style = "margin-top:16px; max-width:900px;",
-                          h2('Välkommen att utforska Region Dalarnas fördelning av 1:1-medel'),
-                          p('1:1-medel är en summa pengar (ca 70 mnkr per år till Dalarna) som regeringen
-              tilldelar regionerna, årsvis. Medlen ska användas för att stimulera regional
+                          h2('Välkommen att utforska Region Dalarnas fördelning av regionala utvecklingsmedel'),
+                          p('Dessa sidor redovisar framförallt de 1:1-medel, en summa pengar (ca 70 mnkr per år till Dalarna) som regeringen
+              tilldelar regionerna, årsvis. Men även en mindre pott särskilda nationella medel (till kommersiell service). Medlen ska användas för att stimulera regional
               utveckling genom att bidra till målen i den nationella strategin för hållbar
               regional utveckling (',
                             tags$a(href = 'https://www.regeringen.se/contentassets/53af87d3b16b4f5087965691ee5fb922/nationell-strategi-for-hallbar-regional-utveckling-i-hela-landet-20212030/',
@@ -269,17 +311,8 @@ shinyUI(
                           ),
                           p('Medlen söks och beviljas som medfinansiering till företagsinvesteringar, att
               upprätthålla viss samhällsservice i glesbygd och till regionala
-              utvecklingsprojekt. Utvecklingsprojekt bedrivs av exempelvis kommuner,
-              företagsfrämjarorganisationer och länsstyrelsen, men även Region Dalarna driver
-              ibland utvecklingsprojekt med dessa medel. Utvecklingsprojekt finansieras ofta
-              med ca hälften 1:1-medel och hälften EU-medel, framförallt från ERUF
-              (Europeiska regionalfonden, ',
-                            tags$a(href = 'https://tillvaxtverket.se/tillvaxtverket/omtillvaxtverket/eufonder/regionalfonden/norramellansverige.3581.html',
-                                   target = '_blank', rel = 'noopener',
-                                   'Norra Mellansverige - Tillväxtverket'),
-                            ').'
-                          ),
-                          p(tags$strong('Viktigt att notera')),
+              utvecklingsprojekt.'),
+
                           p('Det är regionala utvecklingsnämnden som beslutar om beloppen baserat på en
               bedömning av inkomna ansökningar. Beviljade belopp registreras vid den
               tidpunkt då beslut fattas. Själva utbetalningen sker vid en eller flera
@@ -287,18 +320,39 @@ shinyUI(
                           p('Utbetalningar ska alltid motiveras med faktiska och godkända kostnader,
               varför det kan finnas skillnad mellan beviljat belopp och faktiskt
               utbetalt belopp.'),
-                          p(tags$strong('Företagsstöd'), ' \u2013 görs normalt sett som en utbetalning, det
-              tar olika lång tid för företagen att realisera sina investeringar och det
-              förekommer därför att ett beviljat stöd betalas ut nästkommande kalenderår.'),
-                          p(tags$strong('Projektstöd'), ' \u2013 Projektens löptid är allt ifrån 3 månader
-              till 3 år, ibland med förlängning. Utbetalningar för projektstöd görs
+
+              p(tags$strong('Mer om stöden')),
+                          p(tags$strong('Företagsstöd'), ' \u2013 syftet med företagsstöden är att bidra till en hållbar regional utveckling och tillväxt i små och medelstora företag verksamma i Dalarna.
+                          Stöden ska underlätta för små- och medelstora företag (SMF) som är verksamma i Dalarna och som har en nationell/ internationell marknad att genomföra investeringar.
+Utbetalning av företagsstöd sker inom varierande tidsramar beroende på investeringens omfattning, stödets storlek samt företagets egna förutsättningar att genomföra investeringen. Stödet kan betalas ut vid ett eller flera tillfällen.  Det kan därför förekomma att ett beviljat stöd helt eller delvis utbetalas under nästkommande kalenderår.'),
+                          p(tags$strong('Projektstöd'), ' \u2013 regionala utvecklingsprojekt bedrivs av exempelvis kommuner,
+företagsfrämjarorganisationer och länsstyrelsen, men även av Region Dalarna. Utvecklingsprojekt finansieras ofta
+med ca hälften 1:1-medel och hälften EU-medel, framförallt från ERUF
+(Europeiska regionalfonden, ',
+                            tags$a(href = 'https://tillvaxtverket.se/tillvaxtverket/omtillvaxtverket/eufonder/regionalfonden/norramellansverige.3581.html',
+                                   target = '_blank', rel = 'noopener',
+                                   'Norra Mellansverige - Tillväxtverket'),
+                          ').'
+                          ),
+              p('Projektens löptid är allt ifrån 3 månader till 3 år, ibland med förlängning. Utbetalningar för projektstöd görs
               vanligtvis ungefär var 4:e månad. De beviljade totalsummorna för
               projektmedel under ett visst år förväntas därför fördelas över en längre
-              tid, samtidigt som beslut från tidigare år ligger som fasta
-              betalningsåtaganden.')
-                 )
-        )
-      )
+              tid samtidigt som beslut från tidigare år ligger som fasta betalningsåtaganden.'),
+
+              p(tags$strong('Stöd till kommersiell service'), ' \u2013 stöd till kommersiell service bidrar till att bibehålla och utveckla den lokala servicen på landsbygder.
+  Stödet består av fyra delar och finansieras både från 1:1-medlen och från särskilda nationella medel som Tillväxtverket förvaltar.
+  Merparten av stödet går till dagligvarubutiker och drivmedelsanläggningar för drift (särskilt driftstöd) och investeringar (investeringsstöd), och vid särskilda situationer för att överbrygga lönsamhetsproblem (servicebidrag).
+  En liten andel ges även till kommuner som ersättning för hemsändning av dagligvaror (hemsändningsbidrag) till enskilda hushåll.'
+              ),
+              p('Läs mer om ',
+                tags$a(href = 'https://www.regiondalarna.se/verksamhet/regional-utveckling/projektmedel-stod-och-bidrag/stod-till-kommersiell-service/',
+                       target = '_blank', rel = 'noopener',
+                       'stöd till kommersiell service'),
+                ' på Region Dalarnas webbplats.'
+              )
+            )
+            )
+           ),
     ),
 
     tags$div(
@@ -311,3 +365,4 @@ shinyUI(
     )
   )
 )
+

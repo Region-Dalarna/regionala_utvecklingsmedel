@@ -43,7 +43,14 @@ options(scipen = 999)
 # hamta_data() vid behov när tabellerna finns på plats i skarp drift.
 # ============================================================
 
+
 data_sokvag_lokal <- "G:/skript/shiny_data/regionala_utvecklingsmedel/"
+
+# Tillfälligt - läser direkt från G utan att försöka databaskopplingen
+# data_trans    <- readRDS(file.path(data_sokvag_lokal, "data_trans_clean.rds"))
+# data_adresser <- readRDS(file.path(data_sokvag_lokal, "data_adresser_clean.rds"))
+# data_finans   <- readRDS(file.path(data_sokvag_lokal, "data_finans_clean.rds"))
+
 
 hamta_data <- function() {
   tryCatch({
