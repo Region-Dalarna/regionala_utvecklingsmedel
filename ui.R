@@ -130,11 +130,10 @@ shinyUI(
                           )
                  )
         ),
-        # ============ FLIK 3: Projektstatus ============
+        # ============ FLIK 3: Projektbank ============
 
-        tabPanel('Projektstatus',
+        tabPanel('Projektbank',
                  tags$div(class = 'rd-card', style = "margin-top:16px;",
-                          # Filter som bred rad överst
                           fluidRow(
                             column(6,
                                    pickerInput(
@@ -156,22 +155,12 @@ shinyUI(
                                      )
                                    )
                             ),
-                            column(6,
-                                   tags$label(class = 'rd-label', 'Välj kvartal:'),
-                                   tags$div(class = 'rd-segmented',
-                                            radioGroupButtons(
-                                              inputId  = "status_kvartal",
-                                              label    = NULL,
-                                              choices  = c("Q1", "Q2", "Q3", "Q4"),
-                                              selected = paste0("Q", quarter(Sys.Date()))
-                                            )
-                                   )
-                            )
-                          ),
-                          h2('Projektstatus per kvartal'),
-                          p("Filtrera på kolumnerna i sökrutorna nedan."),
+
+                          h2('Projektbank'),
+                          p("Visar projekt som är aktiva under valt kvartal. Filtrera på kolumnerna i sökrutorna nedan."),
                           DTOutput("proj_status_tabell")
                  )
+        )
         ),
         # ============ FLIK 4: Företagsstöd ============
         tabPanel('Företagsstöd',
@@ -352,7 +341,6 @@ med ca hälften 1:1-medel och hälften EU-medel, framförallt från ERUF
               )
             )
             )
-           ),
     ),
 
     tags$div(
@@ -365,4 +353,6 @@ med ca hälften 1:1-medel och hälften EU-medel, framförallt från ERUF
     )
   )
 )
+)
+
 
