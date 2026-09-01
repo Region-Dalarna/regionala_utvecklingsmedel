@@ -157,7 +157,7 @@ shinyUI(
                             ),
 
                           h2('Projektbank'),
-                          p("Visar projekt som är aktiva under valt kvartal. Filtrera på kolumnerna i sökrutorna nedan."),
+                          p("Filtrera på projektägare, projektnamn, beviljat belopp samt tidsperiod som projektet pågått/pågår i sökrutorna nedan."),
                           DTOutput("proj_status_tabell")
                  )
         )
