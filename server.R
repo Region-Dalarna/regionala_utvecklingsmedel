@@ -177,51 +177,33 @@ shinyServer(function(input, output, session) {
   })
 
   # ============================================================
-  # FLIK 3: Projektstatus
+  # FLIK 3: Projektbank
   # ============================================================
 
   proj_status_data <- reactive({
-    req(input$status_ar, input$status_kvartal)
-
+    req(input$status_ar)
     data_trans %>%
       filter(stodtyp == "PROJ",
              !is.na(startdatum),
              !is.na(slutdatum)) %>%
-      distinct(projektnamn, organisationsnamn, startdatum, slutdatum, beslut_ar) %>%
-      rowwise() %>%
-      mutate(kvartal_lista = list(seq(
-        from = as.Date(paste0(year(startdatum), "-",
-                              sprintf("%02d", (quarter(startdatum) - 1) * 3 + 1), "-01")),
-        to   = as.Date(paste0(year(slutdatum), "-",
-                              sprintf("%02d", (quarter(slutdatum) - 1) * 3 + 1), "-01")),
-        by   = "quarter"
-      ))) %>%
-      unnest(kvartal_lista) %>%
-      mutate(
-        kalender_ar    = year(kvartal_lista),
-        kvartal        = paste0("Q", quarter(kvartal_lista)),
-        projekt_status = case_when(
-          year(startdatum)    == year(kvartal_lista) &
-            quarter(startdatum) == quarter(kvartal_lista) ~ "Uppstart",
-          year(slutdatum)     == year(kvartal_lista) &
-            quarter(slutdatum)  == quarter(kvartal_lista) ~ "Avslutas",
-          TRUE ~ "Pågående"
-        )
-      ) %>%
-      filter(kalender_ar %in% as.numeric(input$status_ar),
-             kvartal    == input$status_kvartal) %>%
-      select(organisationsnamn, projektnamn, projekt_status, startdatum, slutdatum)%>%
-    distinct()
+      distinct(projektnamn, organisationsnamn, startdatum, slutdatum, beslut_ar, beviljat_belopp) %>%
+      group_by(projektnamn, organisationsnamn, startdatum, slutdatum, beslut_ar) %>%
+      summarise(beviljat_belopp = sum(beviljat_belopp, na.rm = TRUE), .groups = "drop") %>%
+      filter(beslut_ar %in% as.numeric(input$status_ar)) %>%
+      select(organisationsnamn, projektnamn, beviljat_belopp, startdatum, slutdatum) %>%
+      distinct()
   })
 
   output$proj_status_tabell <- renderDT({
     proj_status_data() %>%
+      mutate(beviljat_belopp = format_varde_matt(beviljat_belopp, "belopp")) %>%
       datatable(
-        colnames = c("Organisation", "Projektnamn", "Status", "Startdatum", "Slutdatum"),
+        colnames = c("Organisation", "Projektnamn", "Beviljat belopp", "Startdatum", "Slutdatum"),
         options  = list(pageLength = 15),
         filter   = "top"
       )
   })
+
 
   # ============================================================
   # FLIK 4: Företagsstöd
