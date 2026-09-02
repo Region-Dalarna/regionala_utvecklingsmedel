@@ -43,7 +43,14 @@ options(scipen = 999)
 # hamta_data() vid behov när tabellerna finns på plats i skarp drift.
 # ============================================================
 
-data_sokvag_lokal <- "g:/skript/shiny_data/regionala_utvecklingsmedel/"
+
+data_sokvag_lokal <- "G:/skript/shiny_data/regionala_utvecklingsmedel/"
+
+# Tillfälligt - läser direkt från G utan att försöka databaskopplingen
+# data_trans    <- readRDS(file.path(data_sokvag_lokal, "data_trans_clean.rds"))
+# data_adresser <- readRDS(file.path(data_sokvag_lokal, "data_adresser_clean.rds"))
+# data_finans   <- readRDS(file.path(data_sokvag_lokal, "data_finans_clean.rds"))
+
 
 hamta_data <- function() {
   tryCatch({
@@ -142,10 +149,11 @@ format_varde_matt <- function(varde, matt) {
 }
 
 # Formaterar en årsvektor till "2018\u20132026" om åren är sammanhängande,
-# annars en kommaseparerad lista - används i hover för att visa vilka år
-# som ingår i en aggregerad stapel.
+# annars en kommaseparerad lista - används i hover/rubriker för att visa
+# vilka år som ingår. as.numeric() hanterar att pickerInput/checkboxGroupInput
+# alltid returnerar valda värden som character (t.ex. "2018").
 formatera_ar_intervall <- function(ar_vektor) {
-  ar <- sort(unique(ar_vektor))
+  ar <- sort(unique(as.numeric(ar_vektor)))
   if (length(ar) == 0) {
     ""
   } else if (length(ar) > 1 && all(diff(ar) == 1)) {
@@ -159,11 +167,16 @@ formatera_ar_intervall <- function(ar_vektor) {
 # DELAD DIAGRAMLOGIK
 # ============================================================
 
+# Källhänvisning som ska visas som caption i alla diagram
+KALLA_TEXT <- "K\u00e4lla: Nyps (Tillv\u00e4xtverket), bearbetningar av Samh\u00e4llsanalys, Region Dalarna"
+
 # Standardtema för alla diagram i appen
 tema_rd_diagram <- function() {
   theme_minimal(base_size = 12) +
     theme(
       plot.title       = element_text(face = "bold", size = 13, color = "#212529"),
+      plot.caption     = element_text(size = 8, color = "#6c757d", hjust = 0,
+                                      margin = margin(t = 10)),
       axis.title       = element_text(size = 10, color = "#6c757d"),
       axis.text        = element_text(size = 9, color = "#212529"),
       legend.title     = element_text(size = 9),
@@ -231,11 +244,15 @@ bygg_kategori_diagram <- function(data, grupp_var, matt, titel, x_lab, farg = fa
                              "\u00c5r: ", ar_text)
     )
 
+  # Diagrammets x-axel visar kategori (inte år), så de valda åren läggs till
+  # i rubriken för att göra tydligt vilken period stapeln avser.
+  titel_med_ar <- paste0(titel, " år ", ar_text)
+
   ggplot(plot_data, aes(x = reorder(kategori_kort, varde), y = varde,
                         tooltip = tooltip_text, data_id = kategori_full)) +
     geom_col_interactive(fill = farg) +
     coord_flip() +
-    labs(title = titel, x = x_lab, y = y_lab_matt(matt)) +
+    labs(title = titel_med_ar, x = x_lab, y = y_lab_matt(matt), caption = KALLA_TEXT) +
     tema_rd_diagram() +
     skala_y_tal() +
     theme(legend.position = "none")
