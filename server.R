@@ -1,4 +1,5 @@
 shinyServer(function(input, output, session) {
+  rdshinyappar::telemetri_server(telemetry, navigation_id = "huvudflikar", forsta_flik = "Beviljade reg. utvecklingsmedel")
 
   # ============================================================
   # FLIK 1: Beviljade 1:1-medel

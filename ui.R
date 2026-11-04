@@ -1,10 +1,13 @@
+APP_BESKRIVNING <- 'Fördelning av regionala utvecklingsmedel, projektmedel och företagsstöd i Dalarna - med projektbank och geografisk översikt.'
+
 shinyUI(
   fluidPage(
     useShinyjs(),
     tags$head(
       tags$link(rel = 'icon', type = 'image/x-icon', href = 'favicon.ico'),
       tags$link(rel = 'stylesheet', type = 'text/css', href = 'regiondalarna_ruf.css'),
-      tags$link(rel = 'stylesheet', type = 'text/css', href = 'app.css')
+      tags$link(rel = 'stylesheet', type = 'text/css', href = 'app.css'),
+      telemetri_ui(telemetry)
     ),
     tags$div(
       class = 'rd-header',
@@ -13,8 +16,7 @@ shinyUI(
         class  = 'rd-header__right',
         href   = 'https://www.regiondalarna.se',
         target = '_blank',
-        tags$img(src = 'logo_liggande_fri_vit.png', alt = 'Region Dalarna'),
-        tags$span('Samhällsanalys')
+        tags$img(src = 'logo_liggande_fri_vit.png', alt = 'Region Dalarna')
       )
     ),
 

@@ -18,6 +18,10 @@ library(dbplyr)
 
 # Delade RD-funktioner, bl.a. databaskoppling shiny_uppkoppling_las()
 source("https://raw.githubusercontent.com/Region-Dalarna/funktioner/main/func_shinyappar.R", encoding = "utf-8", echo = FALSE)
+library(rdshinyappar)
+
+# ---- Telemetri (användningsstatistik, se Adminportalen) --------------------
+telemetry <- skapa_telemetry("regionala_utvecklingsmedel")
 
 # Allmänna options - TRUE = visa inte R-felmeddelanden i appen, FALSE = visa felmeddelanden från R på webben
 options(shiny.sanitize.errors = FALSE)

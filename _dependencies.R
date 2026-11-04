@@ -13,5 +13,7 @@ library(shiny)
 library(shinyjs)
 library(shinyWidgets)
 library(tidyr)
+library(rdshinyappar)
+library(shiny.telemetry)
 
 # ... lägg till fler paket vid behov
