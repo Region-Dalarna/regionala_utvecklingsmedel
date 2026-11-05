@@ -1,7 +1,10 @@
 APP_BESKRIVNING <- 'Fördelning av regionala utvecklingsmedel, projektmedel och företagsstöd i Dalarna - med projektbank och geografisk översikt.'
 
+APP_TITEL <- 'Regionala utvecklingsmedel'
+
 shinyUI(
   fluidPage(
+    title = APP_TITEL,  # webbläsarflikens rubrik
     useShinyjs(),
     tags$head(
       tags$link(rel = 'icon', type = 'image/x-icon', href = 'favicon.ico'),
@@ -11,7 +14,7 @@ shinyUI(
     ),
     tags$div(
       class = 'rd-header',
-      tags$div(class = 'rd-header__title', 'Regionala utvecklingsmedel'),
+      tags$div(class = 'rd-header__title', APP_TITEL),
       tags$a(
         class  = 'rd-header__right',
         href   = 'https://www.regiondalarna.se',
