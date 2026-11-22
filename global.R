@@ -25,8 +25,9 @@ library(rdshinyappar)
 # ---- Telemetri (användningsstatistik, se Adminportalen) --------------------
 telemetry <- skapa_telemetry("regionala_utvecklingsmedel")
 
-# Allmänna options - TRUE = visa inte R-felmeddelanden i appen, FALSE = visa felmeddelanden från R på webben
-options(shiny.sanitize.errors = FALSE)
+# Felmeddelanden: på servern visas inga R-fel för användaren (sanitize = TRUE); felet skrivs ändå till appens logg
+# (se Adminportalen, Driftstatus - Loggar). Lokalt i RStudio visas felen i klartext för att underlätta felsökning.
+options(shiny.sanitize.errors = !interactive())
 
 # Stäng av vetenskaplig notation globalt (påverkar bl.a. axeletiketter i
 # ggplot2/scales). Sätts här istället för scientific=FALSE i label_number(),
